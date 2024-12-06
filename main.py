@@ -4,7 +4,7 @@ from matplotlib import cm
 from stats import Stats, JointStats
 
 N = 100000
-n_pdf = 100
+n_pdf = 50
 
 mu_X = 5
 std_X = 1
@@ -26,6 +26,7 @@ Xr, Yr = np.random.normal(mu_Xr, std_Xr, N), np.random.normal(mu_Yr, std_Yr, N)
 XYr_stats = JointStats(Xr, Yr, n_pdf)
 corr_xy = XYr_stats.correlation()
 
+XYr_stats
 
 X = mu_Xr + std_Xr * Xr
 Y_star = corr_xy * Xr + np.sqrt((1 - corr_xy ** 2 )) * Yr
@@ -38,22 +39,23 @@ Y_stats = Stats(Y, n_pdf)
 X, Y = np.meshgrid(j_stats.stats_x.levels, j_stats.stats_y.levels)
 
 fig, ax = plt.subplots()
-ax.plot_surface(X - mu_X, Y - mu_Y, j_stats.joint_pdf(),
-                       antialiased=False, linewidth=0,
-                       cmap=cm.inferno)
-fig.colorbar()
+surf = ax.contourf(X - mu_X, Y - mu_Y, j_stats.joint_pdf(),
+                       antialiased=False, linewidth=0)
+plt.colorbar(surf)
 plt.show()
 
 fig, ax = plt.subplots()
 
 XY_pdf = np.outer(X_stats.pdf(), Y_stats.pdf())
-surf_2 = ax.plot_surface(X - mu_X, Y - mu_Y, XY_pdf,
-                       antialiased=False, linewidth=0,
-                       cmap=cm.inferno)
-fig.colorbar()
+surf = ax.contourf(X - mu_X, Y - mu_Y, XY_pdf,
+                       antialiased=False, linewidth=0)
+
+fig.colorbar(surf)
 
 plt.show()
 
+plt.scatter(X, Y, s=0.1)
+plt.show()
 
 
 
