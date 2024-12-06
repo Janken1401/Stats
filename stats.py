@@ -5,22 +5,24 @@ class Stats:
         self.n_pdf = n_pdf
         self.values = X
         self.dx = (np.max(self.values) - np.min(self.values)) / self.n_pdf
-        self.levels = self.compute_levels()
-
-        # self.compute_pdf()
+        self.levels = self.levels()
 
     def run_pdf(self):
-        self.mean_X = self.compute_mean()
-        self.std_X = self.compute_std()
-        self.var_X = self.compute_variance()
-        self.skewness = self.compute_skewness()
-        self.kurtosis = self.compute_kurtosis()
+        self.mean_X = self.mean()
+        self.std_X = self.std()
+        self.var_X = self.variance()
+        self.skewness = self.skewness()
+        self.kurtosis = self.kurtosis()
 
-    def compute_levels(self):
+    def levels(self):
         x_min = np.min(self.values)
-        return np.array([np.mean((x_min + i * self.dx, x_min + (i + 1) * self.dx))
-                             for i in range(self.n_pdf)])
-    def compute_pdf(self):
+        x_levels = np.zeros(self.n_pdf)
+        for i in range(self.n_pdf):
+            x_levels[i] = x_min + i * self.dx + self.dx / 2
+
+        return x_levels
+
+    def pdf(self):
         x_min = np.min(self.values)
         pdf_X = np.zeros(self.n_pdf)
         for x in self.values:
@@ -32,27 +34,27 @@ class Stats:
 
         return pdf_X
 
-    def compute_mean(self):
-        return np.sum(self.levels * self.pdfx * self.dx)
+    def mean(self):
+        return np.sum(self.levels * self.pdf() * self.dx)
 
-    def compute_variance(self):
-        return np.sum((self.levels - self.mean_X) ** 2 * self.pdfx * self.dx)
+    def variance(self):
+        return np.sum((self.levels - self.mean()) ** 2 * self.pdf() * self.dx)
 
-    def compute_std(self):
-        return np.sqrt(self.compute_variance())
+    def std(self):
+        return np.sqrt(self.variance())
 
-    def compute_skewness(self):
-        return np.sum((self.levels - self.mean_X) ** 3 * self.pdfx * self.dx) / self.std_X ** 3 / 2
+    def skewness(self):
+        return np.sum((self.levels - self.mean()) ** 3 * self.pdf() * self.dx) / self.std() ** 3 / 2
 
-    def compute_kurtosis(self):
-        return np.sum((self.levels - self.mean_X) ** 4 * self.pdfx * self.dx) / self.std_X ** 4
+    def kurtosis(self):
+        return np.sum((self.levels - self.mean()) ** 4 * self.pdf() * self.dx) / self.std() ** 4
 
-    def compute_cdf(self):
-        return np.cumsum(self.pdfx)
+    def cdf(self):
+        return np.cumsum(self.pdf())
 
     def refind_pdf(self):
         df_dx = np.zeros(self.n_pdf)
-        cdf = self.compute_cdf()
+        cdf = self.cdf()
         for i in range(1, self.n_pdf - 1):
             df_dx[i] = (cdf[i + 1] - cdf[i]) / self.dx
         return df_dx
@@ -64,23 +66,18 @@ class JointStats:
         self.stats_y = Stats(Y, n_pdf)
         self.n_pdf = n_pdf
 
-    def compute_joint_cdf(self):
+    def joint_cdf(self):
         joint_cdf = np.zeros((self.n_pdf, self.n_pdf))
         for i, x in enumerate(self.stats_x.levels):
-            # proba_x = np.where(self.stats_x.values < x)
-
             for j, y in enumerate(self.stats_y.levels):
-                # proba_y = np.where(self.stats_y.values < y)
-                # proba_and = np.intersect1d(proba_x, proba_y)
                 joint_cdf[i, j] = np.sum((self.stats_x.values < x) & (self.stats_y.values < y))
 
         return joint_cdf
 
-    def compute_joint_pdf(self):
+    def joint_pdf(self):
         dx = self.stats_x.dx
         dy = self.stats_y.dx
-
-        joint_cdf = self.compute_joint_cdf()
+        joint_cdf = self.joint_cdf()
         pdf_xy = np.zeros((self.n_pdf, self.n_pdf))
         for i in range(1, self.n_pdf - 1):
             for j in range(1, self.n_pdf - 1):
@@ -90,3 +87,55 @@ class JointStats:
                          + joint_cdf[i, j]) / (dx * dy)
 
         return pdf_xy / (np.sum(pdf_xy) * dx * dy)
+
+    def mixt_moment(self, k, n):
+        dx = self.stats_x.dx
+        dy = self.stats_y.dx
+        return np.sum(self.stats_x.values ** k
+                      * self.stats_y.values ** n
+                      * self.joint_pdf() * dx * dy)
+
+    def mixt_centered_moment(self, k, n):
+        dx = self.stats_x.dx
+        dy = self.stats_y.dx
+        x_mean = self.stats_x.mean()
+        y_mean = self.stats_y.mean()
+        joint_pdf = self.joint_pdf()
+        somme = 0
+        for i in range(self.n_pdf):
+            for j in range(self.n_pdf):
+                somme += ((self.stats_x.levels[i] - x_mean) ** k
+                        *(self.stats_y.levels[j] - y_mean) ** n
+                          * joint_pdf[i, j]) * dx * dy
+        return somme
+    # def mixt_centered_moment(self, k, n):
+    #     dx = self.stats_x.dx
+    #     dy = self.stats_y.dx
+    #     x_mean = self.stats_x.mean()
+    #     y_mean = self.stats_y.mean()
+    #     joint_pdf = self.joint_pdf()
+    #
+    #     # Calculate the differences
+    #     x_diff = self.stats_x.levels - x_mean  # Vectorized operation
+    #     y_diff = self.stats_y.levels - y_mean  # Vectorized operation
+    #
+    #     # Compute the outer product of the moments
+    #     x_term = x_diff ** k  # Shape (n_pdf,)
+    #     y_term = y_diff ** n  # Shape (n_pdf,)
+    #     moment_matrix = np.outer(x_term, y_term)  # Shape (n_pdf, n_pdf)
+    #
+    #     # Multiply element-wise by joint_pdf and integrate
+    #     moment = np.sum(moment_matrix * joint_pdf) * dx * dy
+    #     return moment
+    #     # return np.sum((self.stats_x.levels - self.stats_x.mean()) ** k
+    #     #         * (self.stats_y.levels - self.stats_y.mean()) ** n
+    #     #         * self.joint_pdf() * dx * dy)
+
+    def covariance(self):
+        return self.mixt_centered_moment(1, 1)
+
+    def correlation(self):
+        std_x = self.stats_x.std()
+        std_y = self.stats_y.std()
+        return self.covariance() / (std_x * std_y)
+
