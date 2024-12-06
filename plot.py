@@ -184,14 +184,14 @@ class TP3:
         print('ylevels :\n', self.r.stats_y.levels)
         line()
         v_space()
-        plt.figure()
+        plt.figure(figsize=(16, 8))
+        plt.subplot(1, 2, 1)
         plt.title("Representation of mypdf for X with N = %d and npdf = %d" %
                   (self.N, self.npdf))
         plt.plot(self.r.stats_x.levels, self.r.stats_x.pdf, label='mypdf')
         plt.hist(self.X, bins=self.npdf, density=True, label='Hist')
         plt.legend()
-        plt.show()
-        plt.figure()
+        plt.subplot(1, 2, 2)
         plt.title("Representation of mypdf for y with N = %d and npdf = %d" %
                   (self.N, self.npdf))
         plt.plot(self.r.stats_y.levels, self.r.stats_y.pdf, label='mypdf')

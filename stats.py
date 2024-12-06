@@ -64,6 +64,7 @@ class JointStats:
         self.stats_x = Stats(X, n_pdf)
         self.stats_y = Stats(Y, n_pdf)
         self.n_pdf = n_pdf
+        self.pdf = self.joint_pdf()
 
     def joint_cdf(self):
         joint_cdf = np.zeros((self.n_pdf, self.n_pdf))

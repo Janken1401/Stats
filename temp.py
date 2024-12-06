@@ -11,4 +11,4 @@ param = dict(N=10000,
              X=X,
              Y=Y)
 
-r = AFFICHAGE(TP='TP3', question='all', param=param)
+r = AFFICHAGE()
