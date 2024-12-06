@@ -5,17 +5,24 @@ class Stats:
         self.n_pdf = n_pdf
         self.values = X
         self.dx = (np.max(self.values) - np.min(self.values)) / self.n_pdf
-        self.levels = self.levels()
+        self.levels = self._levels()
+        self.pdf = self._pdf()
 
-    def levels(self):
+    def run_pdf(self):
+        self.mean_X = self.mean()
+        self.std_X = self.std()
+        self.var_X = self.variance()
+        self.skewness = self.skewness()
+        self.kurtosis = self.kurtosis()
+
+    def _levels(self):
         x_min = np.min(self.values)
         x_levels = np.zeros(self.n_pdf)
         for i in range(self.n_pdf):
             x_levels[i] = x_min + i * self.dx + self.dx / 2
-
         return x_levels
 
-    def pdf(self):
+    def _pdf(self):
         x_min = np.min(self.values)
         pdf_X = np.zeros(self.n_pdf)
         for x in self.values:
@@ -24,33 +31,32 @@ class Stats:
             pdf_X[k] += 1
         somme = np.sum(pdf_X) * self.dx
         pdf_X /= somme
-
         return pdf_X
 
     def mean(self):
-        return np.sum(self.levels * self.pdf() * self.dx)
+        return np.sum(self.levels * self.pdf * self.dx)
 
     def variance(self):
-        return np.sum((self.levels - self.mean()) ** 2 * self.pdf() * self.dx)
+        return np.sum((self.levels - self.mean()) ** 2 * self.pdf * self.dx)
 
     def std(self):
         return np.sqrt(self.variance())
 
     def skewness(self):
-        return np.sum((self.levels - self.mean()) ** 3 * self.pdf() * self.dx) / self.std() ** 3 / 2
+        return np.sum((self.levels - self.mean()) ** 3 * self.pdf * self.dx) / self.std() ** 3 / 2
 
     def kurtosis(self):
-        return np.sum((self.levels - self.mean()) ** 4 * self.pdf() * self.dx) / self.std() ** 4
+        return np.sum((self.levels - self.mean()) ** 4 * self.pdf * self.dx) / self.std() ** 4
 
     def cdf(self):
-        return np.cumsum(self.pdf()) * self.dx
+        return np.cumsum(self.pdf)*self.dx
 
     def refind_pdf(self):
         df_dx = np.zeros(self.n_pdf)
         cdf = self.cdf()
         for i in range(1, self.n_pdf):
             df_dx[i] = (cdf[i] - cdf[i - 1]) / self.dx
-        return df_dx / (np.sum(df_dx) * self.dx)
+        return df_dx / (np.sum(df_dx)*self.dx)
 
 
 class JointStats:
