@@ -197,10 +197,10 @@ class TP3:
         plt.show()
 
         fig = plt.figure(figsize=(8, 8))
+        ax = fig.add_subplot(projection='3d')
         x, y = np.meshgrid(self.r.stats_x.levels, self.r.stats_y.levels)
         plt.title("Representation of mypdf for X and Y with N = %d and npdf = %d" %
                   (self.N, self.npdf))
-        ax = fig.add_subplot(111, projection='3d')
         ax.plot_surface(x, y, self.r.pdf, antialiased=False, cmap='inferno')
         plt.xlabel('X')
         plt.ylabel('Y')
@@ -220,24 +220,20 @@ class TP3:
         line()
         print('question 4:')
         line()
-        print('mean = %f' % self.r.mean())
-        print('variance = %f' % self.r.variance())
-        print('coefficient of skewness = %f' % self.r.skewness())
-        print('coefficient of kurtosis = %f' % self.r.kurtosis())
+        # print('mixt moment = %f' % self.r.mixt_moment())
+        # print('mixt centered moment = %f' % self.r.mixt_centered_moment())
+        print('independance stochastique = %f' % self.r.stocks())
         line()
         v_space()
 
     def question5(self):
-        v_space()
-        line()
-        print('question 5 :')
-        line()
-        print('mean = %f' % np.mean(self.X))
-        print('variance = %f' % np.var(self.X))
-        print('coefficient of skewness = %f' % skew(self.X))
-        print('coefficient of kurtosis = %f' % kurtosis(self.X, fisher=False))
-        line()
-        v_space()
+        fig = plt.figure(figsize=(8, 8))
+        plt.title("Representation of X and Y with N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        plt.scatter(self.X, self.Y, s=0.1, cmap='inferno')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.show()
 
 # class TP4:
 #     def __init__(self, question):

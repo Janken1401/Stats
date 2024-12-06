@@ -93,20 +93,19 @@ class JointStats:
         dy = self.stats_y.dx
         return np.sum(self.stats_x.values ** k
                       * self.stats_y.values ** n
-                      * self.joint_pdf() * dx * dy)
+                      * self.pdf * dx * dy)
 
     def mixt_centered_moment(self, k, n):
         dx = self.stats_x.dx
         dy = self.stats_y.dx
         x_mean = self.stats_x.mean()
         y_mean = self.stats_y.mean()
-        joint_pdf = self.joint_pdf()
         somme = 0
         for i in range(self.n_pdf):
             for j in range(self.n_pdf):
                 somme += ((self.stats_x.levels[i] - x_mean) ** k
                         *(self.stats_y.levels[j] - y_mean) ** n
-                          * joint_pdf[i, j]) * dx * dy
+                          * self.pdf[i, j]) * dx * dy
         return somme
 
     def covariance(self):
@@ -117,3 +116,5 @@ class JointStats:
         std_y = self.stats_y.std()
         return self.covariance() / (std_x * std_y)
 
+    def stocks(self):
+        return np.max(self.pdf - self.stats_x.pdf * self.stats_y.pdf)
