@@ -55,28 +55,29 @@ class TP1_2:
             self.question5()
             self.question6()
             self.question7()
-        for i in self.question:
-            if i == '1':
-                self.question1()
-            if i == '2':
-                self.question2()
-            if i == '3':
-                self.question3()
-            if i == '4':
-                self.question4()
-            if i == '5':
-                self.question5()
-            if i == '6':
-                self.question6()
-            if i == '7':
-                self.question7()
+        else :
+            for i in self.question:
+                if i == '1':
+                    self.question1()
+                if i == '2':
+                    self.question2()
+                if i == '3':
+                    self.question3()
+                if i == '4':
+                    self.question4()
+                if i == '5':
+                    self.question5()
+                if i == '6':
+                    self.question6()
+                if i == '7':
+                    self.question7()
 
     def question1(self):
         v_space()
         line()
         print('question 1 :')
         line()
-        print('pdf : \n',self.r.pdf)
+        print('pdf : \n', self.r.pdf)
         line()
         print('xlevels :\n', self.r.levels)
         line()
@@ -141,9 +142,123 @@ class TP1_2:
         plt.legend()
         plt.show()
 
-# class TP3:
-#     def __init__(self, question):
-#         self.ddd = dd
+
+class TP3:
+    def __init__(self, question, params):
+        self.question = question
+        self.npdf = params['npdf']
+        self.N = params['N']
+        self.X = params['X']
+        self.Y = params['Y']
+        self.r = JointStats(self.X, self.Y, self.npdf)
+
+    def run(self):
+        if self.question == 'all':
+            self.question1()
+            self.question2()
+            self.question3()
+            self.question4()
+            self.question5()
+        else :
+            for i in self.question:
+                if i == '1':
+                    self.question1()
+                if i == '2':
+                    self.question2()
+                if i == '3':
+                    self.question3()
+                if i == '4':
+                    self.question4()
+                if i == '5':
+                    self.question5()
+
+    def question1(self):
+        v_space()
+        line()
+        print('question 1 :')
+        line()
+        print('pdf : \n', self.r.pdf)
+        line()
+        print('xlevels :\n', self.r.stats_x.levels)
+        line()
+        print('ylevels :\n', self.r.stats_y.levels)
+        line()
+        v_space()
+        plt.figure()
+        plt.title("Representation of mypdf for X with N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        plt.plot(self.r.stats_x.levels, self.r.stats_x.pdf, label='mypdf')
+        plt.hist(self.X, bins=self.npdf, density=True, label='Hist')
+        plt.legend()
+        plt.show()
+        plt.figure()
+        plt.title("Representation of mypdf for y with N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        plt.plot(self.r.stats_y.levels, self.r.stats_y.pdf, label='mypdf')
+        plt.hist(self.Y, bins=self.npdf, density=True, label='Hist')
+        plt.legend()
+        plt.show()
+
+    def question2(self):
+        v_space()
+        line()
+        print('question 2 :')
+        line()
+        print('correlation : \n', self.r.correlation())
+        line()
+        v_space()
+
+    def question3(self):
+        v_space()
+        line()
+        print('question 3 :')
+        line()
+        print('a :')
+        line()
+        print('intégrate of my_pdf = %f' % (self.r.dx*np.sum(self.r.pdf)))
+        line()
+        v_space()
+
+    def question4(self):
+        v_space()
+        line()
+        print('question 4:')
+        line()
+        print('mean = %f' % self.r.mean())
+        print('variance = %f' % self.r.variance())
+        print('coefficient of skewness = %f' % self.r.skewness())
+        print('coefficient of kurtosis = %f' % self.r.kurtosis())
+        line()
+        v_space()
+
+    def question5(self):
+        v_space()
+        line()
+        print('question 5 :')
+        line()
+        print('mean = %f' % np.mean(self.X))
+        print('variance = %f' % np.var(self.X))
+        print('coefficient of skewness = %f' % skew(self.X))
+        print('coefficient of kurtosis = %f' % kurtosis(self.X, fisher=False))
+        line()
+        v_space()
+
+    def question6(self):
+        plt.figure()
+        plt.title("Representation of mycdf for N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        plt.plot(self.r.levels, self.r.cdf())
+        plt.show()
+
+    def question7(self):
+        plt.figure()
+        plt.title("Representation of the derivation of mycdf for N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        df_dx = self.r.refind_pdf()
+        plt.plot(self.r.levels, df_dx, label='refind pdf')
+        plt.hist(self.X, bins=self.npdf, density=True, label='Hist')
+        plt.legend()
+        plt.show()
 
 
 # class TP4:
