@@ -39,7 +39,7 @@ Y_stats = Stats(Y, n_pdf)
 X, Y = np.meshgrid(j_stats.stats_x.levels, j_stats.stats_y.levels)
 
 fig, ax = plt.subplots()
-surf = ax.contourf(X - mu_X, Y - mu_Y, j_stats.joint_pdf(),
+surf = ax.contourf(X, Y, j_stats.joint_pdf(),
                        antialiased=False, linewidth=0)
 plt.colorbar(surf)
 plt.show()

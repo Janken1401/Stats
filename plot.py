@@ -156,7 +156,6 @@ class TP3:
         if self.question == 'all':
             self.question1()
             self.question2()
-            self.question3()
             self.question4()
             self.question5()
         else :
@@ -165,8 +164,6 @@ class TP3:
                     self.question1()
                 if i == '2':
                     self.question2()
-                if i == '3':
-                    self.question3()
                 if i == '4':
                     self.question4()
                 if i == '5':
@@ -199,23 +196,22 @@ class TP3:
         plt.legend()
         plt.show()
 
+        fig = plt.figure(figsize=(8, 8))
+        x, y = np.meshgrid(self.r.stats_x.levels, self.r.stats_y.levels)
+        plt.title("Representation of mypdf for X and Y with N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(x, y, self.r.pdf, antialiased=False, cmap='inferno')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.show()
+
     def question2(self):
         v_space()
         line()
         print('question 2 :')
         line()
         print('correlation : \n', self.r.correlation())
-        line()
-        v_space()
-
-    def question3(self):
-        v_space()
-        line()
-        print('question 3 :')
-        line()
-        print('a :')
-        line()
-        print('intégrate of my_pdf = %f' % (self.r.dx*np.sum(self.r.pdf)))
         line()
         v_space()
 
@@ -242,24 +238,6 @@ class TP3:
         print('coefficient of kurtosis = %f' % kurtosis(self.X, fisher=False))
         line()
         v_space()
-
-    def question6(self):
-        plt.figure()
-        plt.title("Representation of mycdf for N = %d and npdf = %d" %
-                  (self.N, self.npdf))
-        plt.plot(self.r.levels, self.r.cdf())
-        plt.show()
-
-    def question7(self):
-        plt.figure()
-        plt.title("Representation of the derivation of mycdf for N = %d and npdf = %d" %
-                  (self.N, self.npdf))
-        df_dx = self.r.refind_pdf()
-        plt.plot(self.r.levels, df_dx, label='refind pdf')
-        plt.hist(self.X, bins=self.npdf, density=True, label='Hist')
-        plt.legend()
-        plt.show()
-
 
 # class TP4:
 #     def __init__(self, question):
