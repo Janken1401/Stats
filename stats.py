@@ -60,6 +60,7 @@ class JointStats:
         self.stats_x = Stats(X, n_pdf)
         self.stats_y = Stats(Y, n_pdf)
         self.n_pdf = n_pdf
+        self.joint_pdf = self._joint_pdf()
 
     def joint_cdf(self):
         joint_cdf = np.zeros((self.n_pdf, self.n_pdf))
@@ -69,7 +70,7 @@ class JointStats:
 
         return joint_cdf
 
-    def joint_pdf(self):
+    def _joint_pdf(self):
         dx = self.stats_x.dx
         dy = self.stats_y.dx
         joint_cdf = self.joint_cdf()
@@ -94,13 +95,13 @@ class JointStats:
         dy = self.stats_y.dx
         x_mean = self.stats_x.mean()
         y_mean = self.stats_y.mean()
-        joint_pdf = self.joint_pdf()
+
         somme = 0
         for i in range(self.n_pdf):
             for j in range(self.n_pdf):
                 somme += ((self.stats_x.levels[i] - x_mean) ** k
                         *(self.stats_y.levels[j] - y_mean) ** n
-                          * joint_pdf[i, j]) * dx * dy
+                          * self.joint_pdf[i, j]) * dx * dy
         return somme
 
     def covariance(self):
@@ -110,6 +111,14 @@ class JointStats:
         std_x = self.stats_x.std()
         std_y = self.stats_y.std()
         return self.covariance() / (std_x * std_y)
+
+    def show_pdf(self):
+        X, Y = np.meshgrid(self.stats_x.levels, self.stats_y.levels)
+        fig, ax = plt.subplots()
+        surf = ax.contourf(X - self.stats_x.mean(), Y - self.stats_y.mean(), self.joint_pdf,
+                               antialiased=False, linewidth=0)
+        plt.colorbar(surf)
+        plt.show()
 
     def scatter_plot(self):
         fig, ax = plt.subplots()
