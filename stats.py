@@ -1,4 +1,6 @@
 import numpy as np
+from matplotlib import pyplot as plt
+
 
 class Stats:
     def __init__(self, X, n_pdf):
@@ -72,13 +74,12 @@ class JointStats:
         dy = self.stats_y.dx
         joint_cdf = self.joint_cdf()
         pdf_xy = np.zeros((self.n_pdf, self.n_pdf))
-        for i in range(1, self.n_pdf):
-            for j in range(1, self.n_pdf):
-                pdf_xy[i, j] = (joint_cdf[i, j]
-                         - joint_cdf[i - 1, j]
-                         - joint_cdf[i, j - 1]
-                         + joint_cdf[i - 1, j - 1]) / (dx * dy)
-
+        for i in range(self.n_pdf - 1):
+            for j in range(self.n_pdf - 1):
+                pdf_xy[i, j] = (joint_cdf[i + 1, j + 1]
+                         - joint_cdf[i, j + 1]
+                         - joint_cdf[i + 1, j]
+                         + joint_cdf[i, j]) / (dx * dy)
         return pdf_xy / (np.sum(pdf_xy) * dx * dy)
 
     def mixt_moment(self, k, n):
@@ -109,4 +110,12 @@ class JointStats:
         std_x = self.stats_x.std()
         std_y = self.stats_y.std()
         return self.covariance() / (std_x * std_y)
+
+    def scatter_plot(self):
+        fig, ax = plt.subplots()
+        ax.scatter(self.stats_x.values, self.stats_y.values, s=0.5)
+        ax.set_xlabel('X - value')
+        ax.set_ylabel('Y - value')
+        ax.set_title('Scatter plot')
+        plt.show()
 
