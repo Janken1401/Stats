@@ -156,6 +156,7 @@ class TP3:
         if self.question == 'all':
             self.question1()
             self.question2()
+            self.question3()
             self.question4()
             self.question5()
         else :
@@ -164,6 +165,8 @@ class TP3:
                     self.question1()
                 if i == '2':
                     self.question2()
+                if i == '3':
+                    self.question3()
                 if i == '4':
                     self.question4()
                 if i == '5':
@@ -206,6 +209,16 @@ class TP3:
         plt.ylabel('Y')
         plt.show()
 
+        fig = plt.figure(figsize=(8, 8))
+        ax = fig.add_subplot()
+        x, y = np.meshgrid(self.r.stats_x.levels, self.r.stats_y.levels)
+        plt.title("Representation of mypdf for X and Y with N = %d and npdf = %d" %
+                  (self.N, self.npdf))
+        ax.contourf(x, y, self.r.pdf, antialiased=False, cmap='inferno')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.show()
+
     def question2(self):
         v_space()
         line()
@@ -214,6 +227,10 @@ class TP3:
         print('correlation : \n', self.r.correlation())
         line()
         v_space()
+
+    def question3(self):
+        self.question1()
+        self.question2()
 
     def question4(self):
         v_space()
@@ -235,6 +252,32 @@ class TP3:
         plt.ylabel('Y')
         plt.show()
 
-# class TP4:
-#     def __init__(self, question):
-#         self.ddd = dd
+class TP4:
+    def __init__(self, question, params):
+        self.question = question
+        self.npdf = params['npdf']
+        self.N = params['N']
+        self.X = params['X']
+        self.Y = params['Y']
+        self.r = JointStats(self.X, self.Y, self.npdf)
+
+
+    def run(self):
+        if self.question == 'all':
+            self.question1()
+            self.question2()
+            self.question3()
+        else:
+            for i in self.question:
+                if i == '1':
+                    self.question1()
+                if i == '2':
+                    self.question2()
+                if i == '3':
+                    self.question3()
+
+    def question1(self):
+
+    def question2(self):
+
+    def question3(self):

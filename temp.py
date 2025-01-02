@@ -29,7 +29,7 @@ X2, Y2 = mu_Xr + std_Xr * Xr, mu_Yr + std_Yr * Y_star
 
 param = dict(N=N,
              npdf=npdf,
-             X=X1,
-             Y=Y1)
+             X=X2,
+             Y=Y2)
 
-r = AFFICHAGE(TP='TP3', question='all', param=param)
+r = AFFICHAGE(TP='TP3', question='5', param=param)
